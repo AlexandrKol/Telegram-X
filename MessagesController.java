@@ -128,7 +128,6 @@ import org.thunderdog.challegram.core.Background;
 import org.thunderdog.challegram.core.Lang;
 import org.thunderdog.challegram.core.Media;
 import org.thunderdog.challegram.custom.ImButton;
-import org.thunderdog.challegram.custom.ImageAnite;
 import org.thunderdog.challegram.data.InlineResultButton;
 import org.thunderdog.challegram.data.InlineResultCommand;
 import org.thunderdog.challegram.data.MessageListManager;
@@ -319,7 +318,6 @@ public class MessagesController extends ViewController<MessagesController.Argume
   private HapticMenuHelper sendMenu;
   private InvisibleImageView  scheduleButton;
   public ImButton customButton;
-  public ImageAnite imageAnite;
   private InvisibleImageView commandButton;
   private @Nullable SilentButton silentButton;
 
@@ -7456,7 +7454,8 @@ public class MessagesController extends ViewController<MessagesController.Argume
         break;
       }*/
       case ANIMATOR_SEND: {
-        setSendFactor(factor);
+     //   setSendFactor(factor);
+        setSendFactorNew(factor);
         break;
       }
       case ANIMATOR_SEARCH_BY: {
@@ -7476,6 +7475,27 @@ public class MessagesController extends ViewController<MessagesController.Argume
         checkScrollButtonOffsets();
         break;
       }
+    }
+  }
+
+  private void setSendFactorNew (float factor) {
+    if (this.sendFactor != factor) {
+      this.sendFactor = factor;
+      float scale = .5f * factor;
+
+      float scale1 = .5f + scale;
+      float scale2 = 1f - scale;
+      sendButton.setAlpha(factor);
+      sendButton.setScaleX(scale1);
+      sendButton.setScaleY(scale1);
+
+
+      attachButtons.setPivotY(attachButtons.getHeight());
+      attachButtons.setScaleX(scale2);
+      attachButtons.setScaleY(scale2);
+      attachButtons.setTranslationX( attachButtons.getHeight() * 2.2f * factor);
+      if (tooltipInfo != null && tooltipInfo.isVisible())
+        tooltipInfo.reposition();
     }
   }
 
@@ -8608,10 +8628,9 @@ public class MessagesController extends ViewController<MessagesController.Argume
 
   private static final int ANIMATOR_SEND = 9;
 
-  private final BoolAnimator sendShown = new BoolAnimator(ANIMATOR_SEND, this, AnimatorUtils.LINEAR_INTERPOLATOR, 150l);
+  private final BoolAnimator sendShown = new BoolAnimator(ANIMATOR_SEND, this, AnimatorUtils.LINEAR_INTERPOLATOR, 550l);
 
   private void setSendVisible (boolean isVisible, boolean animated) {
-    if(imageAnite == null) imageAnite = new ImageAnite(context , this , isVisible);
     if (this.sendShown.getValue() != isVisible || !animated) {
       hideBottomHint();
       if (!sendShown.isAnimating()) {
